@@ -1,12 +1,18 @@
 package com.example.test;
 
-import android.R.string;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
+import android.os.Message;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.JavascriptInterface;
+import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -28,7 +34,32 @@ import android.widget.Toast;
 	        
 	        WebSettings webSettings=webview.getSettings();
 	        webSettings.setJavaScriptEnabled(true);
-	        webview.setWebChromeClient(new WebChromeClient());
+	        webview.setWebChromeClient(new WebChromeClient(){
+	        	@Override
+	        	public boolean onJsAlert(WebView view, String url,
+	        			String message, final JsResult result) {
+	        		// TODO Auto-generated method stub
+	        		AlertDialog.Builder builder=new AlertDialog.Builder(view.getContext());
+	        		builder.setTitle("对话框").setMessage(message).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+							result.confirm();
+						}
+					});
+	        		builder.setOnKeyListener(new OnKeyListener() {
+						
+						@Override
+						public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+							return true;
+						}
+					});
+	        		builder.setCancelable(false);
+	        		AlertDialog dialog=builder.create();
+	        		dialog.show();
+	        		return true;
+	        	}
+	        });
 	        webview.addJavascriptInterface(new CallJs(), "control");
 	        
 	        btnTest.setOnClickListener(new OnClickListener() {
