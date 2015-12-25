@@ -3,11 +3,9 @@ package com.example.test;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
-import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,14 +31,17 @@ import android.widget.Toast;
 	        btnTestReturn=(Button) findViewById(R.id.btnTestReturn);
 	        
 	        WebSettings webSettings=webview.getSettings();
-	        webSettings.setJavaScriptEnabled(true);
+	        webSettings.setJavaScriptEnabled(true);//允许调用js
+	        
+	        /*
+	         * 重写js中alert样式
+	         * */
 	        webview.setWebChromeClient(new WebChromeClient(){
 	        	@Override
 	        	public boolean onJsAlert(WebView view, String url,
-	        			String message, final JsResult result) {
-	        		// TODO Auto-generated method stub
+        			String message, final JsResult result) {
 	        		AlertDialog.Builder builder=new AlertDialog.Builder(view.getContext());
-	        		builder.setTitle("�Ի���").setMessage(message).setPositiveButton("ȷ��", new DialogInterface.OnClickListener() {
+	        		builder.setTitle("对话框").setMessage(message).setPositiveButton("确定", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.dismiss();
@@ -60,8 +61,11 @@ import android.widget.Toast;
 	        		return true;
 	        	}
 	        });
-	        webview.addJavascriptInterface(new CallJs(), "control");
+	        webview.addJavascriptInterface(new CallJs(), "control");//添加js调用java方法的接口
 	        
+	        /*
+	         * java调用js方法
+	         * */
 	        btnTest.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -69,6 +73,9 @@ import android.widget.Toast;
 				}
 			});
 	        
+	        /*
+	         * java调用带参数和返回的js方法
+	         * */
 	        btnTestReturn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -77,20 +84,29 @@ import android.widget.Toast;
 				}
 			});
 	        
-	        webview.loadUrl("file:///android_asset/index.html");
+	        webview.loadUrl("file:///android_asset/index.html");//加载页面
 	    }
 	    
 	    public class CallJs{
+	    	/*
+	    	 * js调用的java方法
+	    	 * */
 	    	@JavascriptInterface
 	    	public void callJs(String message){
 	    		Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
 	    	}
 	    	
+	    	/*
+	    	 * js调用带参数和返回的java方法
+	    	 * */
 	    	@JavascriptInterface
 	    	public int plus(int a,int b){
 	    		return a+b;
 	    	}
 	    	
+	    	/*
+	    	 * java调用带参数和返回的js代码的回调方法
+	    	 * */
 	    	@JavascriptInterface
 	    	public void callBack(String res){
 	    		Toast.makeText(MainActivity.this, res, Toast.LENGTH_SHORT).show();
